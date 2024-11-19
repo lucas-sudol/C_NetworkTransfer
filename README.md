@@ -20,6 +20,8 @@ Linux 3090 Docker Containter
 
 * To test running multiple clients `./sendTest.sh <fileName> <IP-address>:<port-number> <number-of-clients> [bufSize]`
 
+* To test transfers in different environments `./environmentTest.sh <fileName> <server-hostname>:<port-number> <bufferSize> <numTransfers>`
+
 ## Limitations
 
 ## Author Information
