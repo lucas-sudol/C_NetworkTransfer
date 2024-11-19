@@ -18,6 +18,8 @@ Linux 3090 Docker Containter
 
 * Send a file using the client `./sendFile fileName IP-address:port-number bufSize`
 
+* To test running multiple clients `./sendTest.sh <fileName> <IP-address>:<port-number> <number-of-clients> [bufSize]`
+
 ## Limitations
 
 ## Author Information
