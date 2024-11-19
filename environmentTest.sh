@@ -41,21 +41,30 @@ for ((i = 1; i <= numTransfers; i++)); do
     # Measure transfer time using the `time` command
     { time ./sendFile "$fileName" "$serverAddress" "$bufferSize"; } 2> temp_time.log
     elapsed=$(grep real temp_time.log | awk '{print $2}')
-    
-    # Convert elapsed time to seconds
-    minutes=$(echo "$elapsed" | grep -oE '^[0-9]+' || echo 0)
-    seconds=$(echo "$elapsed" | grep -oE '[0-9]+\.[0-9]+$')
-    elapsedSeconds=$(echo "$minutes * 60 + $seconds" | bc)
 
-    echo "Transfer $i Time: $elapsedSeconds seconds" >> $logFile
-    
-    # Update metrics
-    totalTime=$(echo "$totalTime + $elapsedSeconds" | bc)
-    if (( $(echo "$elapsedSeconds < $minTime" | bc -l) )); then
-        minTime=$elapsedSeconds
+    # Parse the elapsed time
+    if [[ "$elapsed" =~ ([0-9]+)m([0-9]+\.[0-9]+)s ]]; then
+        minutes=${BASH_REMATCH[1]}
+        seconds=${BASH_REMATCH[2]}
+        elapsedSeconds=$(echo "$minutes * 60 + $seconds" | bc)
+    elif [[ "$elapsed" =~ ([0-9]+\.[0-9]+)s ]]; then
+        elapsedSeconds=${BASH_REMATCH[1]}
+    else
+        echo "Error: Unexpected time format: $elapsed" >> $logFile
+        elapsedSeconds=0
     fi
-    if (( $(echo "$elapsedSeconds > $maxTime" | bc -l) )); then
-        maxTime=$elapsedSeconds
+
+    if (( $(echo "$elapsedSeconds > 0" | bc -l) )); then
+        echo "Transfer $i Time: $elapsedSeconds seconds" >> $logFile
+        totalTime=$(echo "$totalTime + $elapsedSeconds" | bc)
+        if (( $(echo "$elapsedSeconds < $minTime" | bc -l) )); then
+            minTime=$elapsedSeconds
+        fi
+        if (( $(echo "$elapsedSeconds > $maxTime" | bc -l) )); then
+            maxTime=$elapsedSeconds
+        fi
+    else
+        echo "Warning: Transfer $i reported zero time; skipping metrics update." >> $logFile
     fi
 done
 
