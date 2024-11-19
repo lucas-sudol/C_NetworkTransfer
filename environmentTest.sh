@@ -11,10 +11,8 @@ pingFile="ping_results.log"
 
 # Determine file size in bytes
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    # Linux: Use stat with --printf
     fileSize=$(stat --printf="%s" "$fileName")
 elif [[ "$OSTYPE" == "darwin"* ]]; then
-    # macOS: Use stat -f
     fileSize=$(stat -f%z "$fileName")
 else
     echo "Unsupported OS: $OSTYPE"
@@ -39,20 +37,25 @@ maxTime=0
 
 for ((i = 1; i <= numTransfers; i++)); do
     echo "Transfer $i..." >> $logFile
-    start=$(date +%s.%N) # Record start time
-    ./sendFile "$fileName" "$serverAddress" "$bufferSize" >> $logFile 2>&1
-    end=$(date +%s.%N)   # Record end time
-    elapsed=$(echo "$end - $start" | bc)
+
+    # Measure transfer time using the `time` command
+    { time ./sendFile "$fileName" "$serverAddress" "$bufferSize"; } 2> temp_time.log
+    elapsed=$(grep real temp_time.log | awk '{print $2}')
     
-    echo "Transfer $i Time: $elapsed seconds" >> $logFile
+    # Convert elapsed time to seconds
+    minutes=$(echo "$elapsed" | grep -oE '^[0-9]+' || echo 0)
+    seconds=$(echo "$elapsed" | grep -oE '[0-9]+\.[0-9]+$')
+    elapsedSeconds=$(echo "$minutes * 60 + $seconds" | bc)
+
+    echo "Transfer $i Time: $elapsedSeconds seconds" >> $logFile
     
     # Update metrics
-    totalTime=$(echo "$totalTime + $elapsed" | bc)
-    if (( $(echo "$elapsed < $minTime" | bc -l) )); then
-        minTime=$elapsed
+    totalTime=$(echo "$totalTime + $elapsedSeconds" | bc)
+    if (( $(echo "$elapsedSeconds < $minTime" | bc -l) )); then
+        minTime=$elapsedSeconds
     fi
-    if (( $(echo "$elapsed > $maxTime" | bc -l) )); then
-        maxTime=$elapsed
+    if (( $(echo "$elapsedSeconds > $maxTime" | bc -l) )); then
+        maxTime=$elapsedSeconds
     fi
 done
 
@@ -68,3 +71,6 @@ echo "Avg Transfer Time: $avgTime seconds" >> $logFile
 echo "Min Transfer Rate: $minRate bytes/second" >> $logFile
 echo "Max Transfer Rate: $maxRate bytes/second" >> $logFile
 echo "Avg Transfer Rate: $avgRate bytes/second" >> $logFile
+
+# Cleanup temporary time log
+rm temp_time.log
