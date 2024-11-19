@@ -8,7 +8,18 @@ numTransfers=$4
 
 logFile="transfer_results.log"
 pingFile="ping_results.log"
-fileSize=$(stat --printf="%s" "$fileName")
+
+# Determine file size in bytes
+if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    # Linux: Use stat with --printf
+    fileSize=$(stat --printf="%s" "$fileName")
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS: Use stat -f
+    fileSize=$(stat -f%z "$fileName")
+else
+    echo "Unsupported OS: $OSTYPE"
+    exit 1
+fi
 
 # Extract the hostname/IP from the server address
 host=$(echo "$serverAddress" | cut -d':' -f1)
