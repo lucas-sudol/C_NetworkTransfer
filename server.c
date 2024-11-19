@@ -7,7 +7,8 @@
 
 #define DEFAULT_BUFSIZE 4096
 
-char* strdup(char * old) {
+
+char* strdup2(char * old) {
     char * newString = malloc(sizeof(char) * (strlen(old) + 1));
     strcpy(newString, old);
     newString[strlen(old)] = '\0';
@@ -21,7 +22,7 @@ char* get_unique_filename(char *filename, int* fileCtr) {
 
     if(stat(filename, &buffer) == 0) {
         snprintf(temp, sizeof(temp), "%d-%s", ++*fileCtr, filename);
-        return strdup(temp);
+        return strdup2(temp);
     }
 
     return NULL;
