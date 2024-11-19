@@ -1,28 +1,22 @@
 # Project Title
-
-A1 - Pthreads Based Scehduler
+A3 - Network Transfer Using C
 
 ## Description
-Uses linux Pthreads to to perform thread based scheudling of PI computations.
+Provides functionality for sending text files from a client to a server using TCP.
+
+Supports host name resolution.
 
 ## Getting Started
 
 ### Dependencies
-
 Linux 3090 Docker Containter
 
 ### Executing program
+* Build the program with `make all`
 
-* How to build and run the program
-make all
+* Start the server `./server port-number bufSize`
 
-./A1 fileName flag (true/false print output)
-
-* include the expected output
-
-A1
-serial
-
+* Send a file using the client `./sendFile fileName IP-address:port-number bufSize`
 
 ## Limitations
 
