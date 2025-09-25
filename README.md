@@ -24,11 +24,10 @@ Compile program on server and client machines using make all
 * To test transfers in different environments `python3 environmentTest.py <fileName> <server-hostname>:<port-number> <bufferSize> <numTransfers>`
     * must have server running on different computer to effectivley test environment
 
-## Limitations
-
 ## Author Information
 Lucas Sudol
 Sebastian Kula
+
 
 
 
