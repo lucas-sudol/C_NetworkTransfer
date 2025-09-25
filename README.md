@@ -2,14 +2,15 @@
 A3 - Network Transfer Using C
 
 ## Description
-Provides functionality for sending text files from a client to a server using TCP.
+Server Usage: %s <port-number> [bufSize]
+Client Usage: %s <fileName> <IP-address/hostname>:<port-number> [bufSize]
 
+Provides functionality for sending text files from a client to a server using TCP.
 Supports host name resolution.
 
-## Getting Started
+Compile program on server and client machines using make all
 
-### Dependencies
-Linux 3090 Docker Containter
+## Getting Started
 
 ### Executing program
 * Build the program with `make all`
@@ -21,20 +22,13 @@ Linux 3090 Docker Containter
 * To test running multiple clients `./sendTest.sh <fileName> <IP-address>:<port-number> <number-of-clients> [bufSize]`
 
 * To test transfers in different environments `python3 environmentTest.py <fileName> <server-hostname>:<port-number> <bufferSize> <numTransfers>`
+    * must have server running on different computer to effectivley test environment
 
 ## Limitations
 
 ## Author Information
 Lucas Sudol
-lsudol@uoguelph.ca
-1227984
-
 Sebastian Kula
-skula@uoguelph.ca
-1247993
 
-## Development History
-
-## Acknowledgments
 
 
